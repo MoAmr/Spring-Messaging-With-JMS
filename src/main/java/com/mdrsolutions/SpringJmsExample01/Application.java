@@ -1,5 +1,6 @@
 package com.mdrsolutions.SpringJmsExample01;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -19,9 +20,9 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-        JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+        Sender sender = context.getBean(Sender.class);
 
-        jmsTemplate.convertAndSend("order-queue", "Hello");
+        sender.sendMessage("order-queue", "Hello");
     }
 
     @Bean
@@ -31,6 +32,18 @@ public class Application {
         DefaultJmsListenerContainerFactory containerFactory = new DefaultJmsListenerContainerFactory();
         configurer.configure(containerFactory, factory);
         return containerFactory;
+    }
+
+    @Bean
+    public ActiveMQConnectionFactory connectionFactory() {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("admin",
+                "admin", "tcp://localhost:61616");
+        return factory;
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplate() {
+        return new JmsTemplate(connectionFactory());
     }
 
 }
