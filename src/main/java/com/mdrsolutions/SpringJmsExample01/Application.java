@@ -46,4 +46,11 @@ public class Application {
         return new JmsTemplate(connectionFactory());
     }
 
+    public DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory() {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory());
+        factory.setConcurrency("1-1");
+        return factory;
+    }
+
 }
